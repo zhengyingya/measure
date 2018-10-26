@@ -1,7 +1,9 @@
 <template>
   <div id="app">
     <Header/>
-    <router-view></router-view>
+    <div class="wrap">
+      <router-view></router-view>
+    </div>
   </div>
 </template>
 
@@ -19,5 +21,13 @@
   /* CSS */
   #app {
     min-width: 1000px;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+  .wrap {
+    display: flex;
+    flex: 1;
+    overflow: scroll;
   }
 </style>
