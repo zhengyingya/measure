@@ -4,6 +4,13 @@ html, body {
   font-family: 'Avenir', Helvetica, Arial, sans-serif;
 }
 
+@for $i from 1 through 30
+{
+  .fz-#{10 + $i*2} {
+    font-size: (10 + $i*2) + px;
+  }
+}
+
 
 .flex-column {
   display: flex;

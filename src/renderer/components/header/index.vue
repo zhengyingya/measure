@@ -3,28 +3,39 @@
     <el-row type="flex">
       <div class="c-logo">量块测量系统</div>
       <el-menu
-        default-active="1"
+        :default-active="navActive"
         class="el-menu-demo"
         mode="horizontal"
+        router
         @select="handleSelect"
         background-color="#545c64"
         text-color="#fff"
         active-text-color="#ffd04b"
         style="flex:1">
-        <el-menu-item index="1" class="c-item">样品</el-menu-item>
-        <el-menu-item index="2" class="c-item">测量</el-menu-item>
-        <el-menu-item index="3" class="c-item">配置</el-menu-item>
+        <el-menu-item index="/" class="c-item">样品</el-menu-item>
+        <el-menu-item index="/home" class="c-item">测量</el-menu-item>
+        <el-menu-item index="/config" class="c-item">配置</el-menu-item>
       </el-menu>
     </el-row>
   </div>
 </template>
 
 <script>
+import { mapState } from 'vuex'
 export default {
+  
   name: 'comHeader',
+  computed: {
+    ...mapState ({
+      navActive (state) {
+        console.log('----', state.app.navActive)
+        return state.app.navActive
+      }
+    }) 
+  },
   methods: {
     handleSelect () {
-      
+
     }
   }
 }

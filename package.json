@@ -56,6 +56,7 @@
   "dependencies": {
     "axios": "^0.18.0",
     "element-ui": "^2.4.8",
+    "nedb": "^1.8.0",
     "oracledb": "^3.0.0",
     "serialport": "^6.2.2",
     "vue": "^2.5.16",
