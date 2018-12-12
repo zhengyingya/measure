@@ -29,6 +29,7 @@ const actions = {
       ON TASK_SAMPLES.TASK_SAMPLE_ORDER = TASK_ORDER.ID\
       where SAMPLE_NAME = '量块' and NODE_STATUS='RECORD'")
       .then((result) => {
+        console.log(result)
         commit('LIST_GET_SAMPLE_LIST', { sampleHead: result.metaData, sampleList: result.rows })
       })
   }

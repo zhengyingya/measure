@@ -111,9 +111,9 @@ export default {
     confirm () {
       if (this.isUpdate) {
         this.updateConfigData({
-          id: this.isUpdate,
+          id: this.updateId,
           name: this.name,
-          data: this.tableData
+          tableData: this.tableData
         })
         .then((res) => {
           this.$message({
@@ -156,7 +156,7 @@ export default {
       this.isUpdate = true
       this.updateId = this.configData[index]._id
       this.name = this.configData[index].name
-      this.tableData = this.configData[index].data
+      this.tableData = JSON.parse(JSON.stringify(this.configData[index].data))
     },
     // 删除一项
     onDelete (index) {

@@ -16,19 +16,19 @@
         </div>
       </el-col>
       <el-col class="c2">
-        <div class="text">111</div>
+        <div class="text">{{currentValue}}<span class="fz-38">mm</span></div>
       </el-col>
       <el-col class="c3">
-          <el-button type="success" class="btn" style="margin: 20px 10px;" @click="start">开始</el-button>
-          <el-button type="primary" plain class="btn" style="margin-bottom: 20px;" @click="take">采样</el-button>
-          <el-button type="warning" plain class="btn" @click="zero">清零</el-button>
+          <el-button :disabled="currentStep!=0?true:false" type="success" class="btn" style="margin: 20px 10px;" @click="start">开始</el-button>
+          <el-button :disabled="currentStep>6?true:false" type="primary" plain class="btn" style="margin-bottom: 20px;" @click="take">采样</el-button>
+          <el-button :disabled="currentStep>6?true:false" type="warning" plain class="btn" @click="zero">清零</el-button>
       </el-col>
     </el-row>
     <el-row>
-      <MeasureData/>
+      <MeasureData :configData="configData[configIndex]"/>
     </el-row>
     <el-row>
-      <Record/>
+      <Record :configData="configData[configIndex]"/>
     </el-row>
   </div>
 </template>
@@ -46,6 +46,11 @@ export default {
     Record,
     Dot
   },
+  data () {
+    return {
+      configIndex: this.$route.params.configIndex
+    }
+  },
   computed: {
     ...mapState({
       temp: (state) => {
@@ -53,13 +58,21 @@ export default {
       },
       currentStep: (state) => {
         return state.measure.currentStep
+      },
+      configData: (state) => {
+        return state.mearConfig.configData
+      },
+      currentValue: (state) => {
+        return state.measure.currentValue
       }
     })
   },
+  created () {
+    // console.log('-----', this.$route)
+  },
   methods: {
-    ...mapActions(['nextStep', 'getValue']),
+    ...mapActions(['nextStep', 'getValue', 'mearStart']),
     start () {
-      console.log(this.temp)
       if (!this.temp) {
         this.$alert('请先输入温度值', '提示', {
           confirmButtonText: '确定',
@@ -67,7 +80,6 @@ export default {
         })
       }
       else {
-        this.getValue()
         this.nextStep()
       }
     },

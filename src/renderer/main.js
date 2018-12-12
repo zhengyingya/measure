@@ -11,6 +11,14 @@ import './styles/global.scss'
 import '../database/oracle'
 import '../common/serialport'
 
+console.log('open', window.serialPort.open('/dev/tty.usbserial'))
+
+// window.serialPort.send('13\r\n', (res) => {
+//   let num = res.split(' ')[1].replace('K', '') + res.split(' ')[2].replace('K', '')
+//   num = (Number(num.slice(0, 12) + '.' + num.slice(-4)) * 2).toFixed(4)
+//   console.log('-----', res, num)
+// })
+
 if (!process.env.IS_WEB) Vue.use(require('vue-electron'))
 Vue.http = Vue.prototype.$http = axios
 Vue.config.productionTip = false
@@ -24,11 +32,3 @@ new Vue({
   store,
   template: '<App/>'
 }).$mount('#app')
-
-const Serialport = require('serialport');
-
-Serialport.list((err, ports) => {
-  ports.forEach((port) => {
-    console.log(port.comName);
-  });
-});

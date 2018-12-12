@@ -11,6 +11,7 @@ const actions = {
 
 const mutations = {
   APP_CHANGE_ROUTER(state, { name, params }) {
+    console.log('===========')
     state.navActive = '/' + name
   }
 }

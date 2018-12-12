@@ -1,75 +1,85 @@
 <template>
   <div class="record">
     <el-table
-      :data="tableData3"
+      :data="tableData"
       border
       stripe
-      style="width: 100%">
+      style="width:100%">
       <el-table-column
-        prop="date"
+        width="60">
+        <template slot-scope="scope">
+          <el-button
+            size="mini"
+            type="primary"
+            :disabled="currentStep>0"
+            @click="handleRemear(scope.$index)">重测</el-button>
+        </template>
+      </el-table-column>
+      <el-table-column
+        prop="size"
         label="量块名义尺寸（mm）"
         width="80">
       </el-table-column>
       <el-table-column label="研合性/外观">
         <el-table-column
-          prop="name"
+          prop="upface"
           label="上工作面"
           width="60">
         </el-table-column>
         <el-table-column
-          prop="address"
+          prop="downface"
           label="下工作面"
           width="60">
         </el-table-column>
       </el-table-column>
       <el-table-column
-          prop="address"
+          prop="temp"
           label="温度（℃）">
       </el-table-column>
       <el-table-column
-          prop="address"
+          prop="fix"
           label="标准修正量（μm）"
           width="100">
       </el-table-column>
       <el-table-column label="测量读数（μm）">
         <el-table-column
-            prop="address"
+            prop="valueCenter"
             label="中心">
         </el-table-column>
         <el-table-column
-            prop="address"
+            prop="valueA"
             label="a">
         </el-table-column>
         <el-table-column
-            prop="address"
+            prop="valueB"
             label="b">
         </el-table-column>
         <el-table-column
-            prop="address"
+            prop="valueC"
             label="c">
         </el-table-column>
         <el-table-column
-            prop="address"
+            prop="valueD"
             label="d">
         </el-table-column>
       </el-table-column>
       <el-table-column
-        prop="address"
+        prop="detaLength"
         label="长度变动量（μm）"
         width="70">
       </el-table-column>
       <el-table-column
-        prop="address"
+        prop="offsetLength"
         label="中心长度偏差（μm）"
         width="70">
       </el-table-column>
       <el-table-column
-        prop="address"
+        prop="level"
         label="级"
         width="50">
       </el-table-column>
       <el-table-column
-        prop="address"
+        prop="grade"
         label="等"
         width="50">
       </el-table-column>
@@ -79,47 +89,47 @@
 
 <script>
 import measureData from './measureData'
+import { mapState, mapActions } from 'vuex'
 
 export default {
   name: 'tableData',
   components: {
     measureData
   },
-  data() {
+  props: ['configData'],
+  data () {
     return {
-      tableData3: [{
-        date: '2016-05-03',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1518 弄'
-      }, {
-        date: '2016-05-02',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1518 弄'
-      }, {
-        date: '2016-05-04',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1518 弄'
-      }, {
-        date: '2016-05-01',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1518 弄'
-      }, {
-        date: '2016-05-08',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1518 弄'
-      }, {
-        date: '2016-05-06',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1518 弄'
-      }, {
-        date: '2016-05-07',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1518 弄'
-      }]
     }
+  },
+  computed: {
+    ...mapState({
+      tableData: (state) => {
+        return state.measure.tableData
+      },
+      currentStep: (state) => {
+        return state.measure.currentStep
+      }
+    })
+  },
+  methods: {
+    ...mapActions(['initTableData', 'remear', 'setRemearFlag']),
+    handleRemear (index) {
+      this.setRemearFlag()
+      this.remear({ blockIndex: index })
+    }
+  },
+  created () {
+    this.initTableData({ configData: this.configData })
   }
 }
 </script>
+<style lang="scss">
+.record {
+  .el-button--mini {
+    padding: 5px 7px;
+  }
+}
+</style>
 
 <style lang="scss" scoped>
 .record {

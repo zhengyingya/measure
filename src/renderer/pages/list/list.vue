@@ -46,21 +46,20 @@
     </el-table>
 
     <el-dialog
-      title="提示"
+      title="选择配置文件"
       :visible.sync="dialogVisible"
-      width="30%"
-      :before-close="handleClose">
-      <el-select>
+      width="30%">
+      <el-select v-model="configIndex" style="width:100%">    
         <el-option
-          v-for="item in options"
-          :key="item.value"
-          :label="item.label"
-          :value="item.value">
+          v-for="(item, index) in configData"
+          :key="item.index"
+          :label="item.name"
+          :value="index">
         </el-option>
       </el-select>
       <span slot="footer" class="dialog-footer">
         <el-button @click="dialogVisible = false">取 消</el-button>
-        <el-button type="primary" @click="dialogVisible = false">确 定</el-button>
+        <el-button type="primary" @click="onConfirm">确 定</el-button>
       </span>
     </el-dialog>
   </div>
@@ -77,6 +76,9 @@ export default {
   },
   data () {
     return {
+      dialogVisible: false,
+      configIndex: 0,
+      selectIndex: 0
     }
   },
   computed: {
@@ -84,20 +86,25 @@ export default {
       sampleList: (state) => {
         return state.list.sampleList
       },
-      sampleHead: (state) => {
-        return state.sampleHead
+      configData: (state) => {
+        // this.configName = state.mearConfig.configData[0] ? state.mearConfig.configData[0].name : ''
+        return state.mearConfig.configData
       }
     })
   },
   created () {
     this.getSampleList()
+    this.getConfigData()
   },
   methods: {
-    ...mapActions(['getSampleList', 'changeRouter']),
+    ...mapActions(['getSampleList', 'changeRouter', 'getConfigData']),
     dateFormat,
     handleEdit (index) {
-
-      this.$router.push({ name: 'home', params: { index: index } })
+      this.dialogVisible = true
+      this.selectIndex = index
+    },
+    onConfirm () {
+      this.$router.push({ name: 'home', params: { selectIndex: this.selectIndex,  configIndex: this.configIndex} })
       this.changeRouter({ name: 'home' })
     }
   },

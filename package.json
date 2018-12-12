@@ -55,11 +55,11 @@
   },
   "dependencies": {
     "axios": "^0.18.0",
-    "element-ui": "^2.4.8",
+    "element-ui": "^2.4.11",
     "nedb": "^1.8.0",
     "oracledb": "^3.0.0",
     "serialport": "^6.2.2",
-    "vue": "^2.5.16",
+    "vue": "^2.5.17",
     "vue-electron": "^1.0.6",
     "vue-router": "^3.0.1",
     "vuex": "^3.0.1"

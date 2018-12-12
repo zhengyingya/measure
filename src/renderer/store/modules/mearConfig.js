@@ -11,6 +11,7 @@ const actions = {
       })
   },
   updateConfigData({ commit, dispatch }, { id, name, tableData }) {
+    console.log(id, tableData)
     return nedbManage.update({
         _id: id
       }, {
