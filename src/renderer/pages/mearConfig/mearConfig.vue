@@ -146,12 +146,10 @@ export default {
       })
     },
     deleteLine (index) {
-      console.log(index)
       this.tableData.splice(index, 1)
     },
     //编辑一项
     onEdit (index) {
-      console.log(index, this.configData)
       this.isEdit = true
       this.isUpdate = true
       this.updateId = this.configData[index]._id

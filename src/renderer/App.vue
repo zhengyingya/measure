@@ -40,6 +40,6 @@
   .wrap {
     display: flex;
     flex: 1;
-    overflow: scroll;
+    overflow: auto;
   }
 </style>

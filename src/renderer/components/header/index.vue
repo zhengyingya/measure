@@ -5,7 +5,8 @@
       <div style="display:flex;flex:1;background:rgb(84, 92, 100)">
         <div :class="['menu-item', navActive==='/'?'active':'']" @click="handleSelect('')">样品</div>
         <div :class="['menu-item', navActive==='/home'?'active':'']" @click="handleSelect('home')">测量</div>
-        <div :class="['menu-item', navActive==='/config'?'active':'']" @click="handleSelect('config')">配置</div>
+        <div :class="['menu-item', navActive==='/config'?'active':'']" @click="handleSelect('config')">模板</div>
+        <div :class="['menu-item', navActive==='/comConfig'?'active':'']" @click="handleSelect('comConfig')">串口</div>
       </div>
       <!-- <el-menu
         :default-active="navActive"
@@ -51,7 +52,7 @@ export default {
             type: 'warning'
           }).then(() => {
             this.changeRouter({ name: index })
-            this.$router.push({ path: index })
+            this.$router.push({ path: '/' + index })
           })
         }  
       } else if (index === 'home') {

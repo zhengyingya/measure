@@ -1,6 +1,6 @@
 <template>
   <div class="measure-data">
-    <el-row type="flex">
+    <el-row type="flex" class="main">
       <el-col class="c1">
         <el-row type="flex" style="margin-bottom: 10px;">
           <div class="label">当前量块</div>
@@ -43,21 +43,46 @@
         <el-button type="warning" icon="el-icon-arrow-right" :disabled="currentStep===7" circle></el-button> -->
         <el-row><el-button :disabled="currentStep<=6" type="danger" style="margin-top:0px;" @click="onRemear">重测</el-button></el-row>
         <el-row><el-button :disabled="currentStep<=6" type="primary" style="margin-top:10px;" @click="onNext">下一块</el-button></el-row>
-        <el-row v-if="isOver"><el-button type="success" style="margin-top:10px;" @click="onNext">提交</el-button></el-row>
+        <el-row v-if="1||isOver"><el-button type="success" style="margin-top:10px;" @click="onSubmit">提交</el-button></el-row>
       </el-col>
     </el-row>
+
+    <el-dialog
+      title="选择模板"
+      :visible.sync="dialogVisible"
+      width="30%">
+      <el-select v-model="templateIndex" style="width:100%">    
+        <el-option
+          v-for="(item, index) in files"
+          :key="index"
+          :label="item"
+          :value="index">
+        </el-option>
+      </el-select>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="dialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="onConfirm">确 定</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
 <script>
 import { mapState, mapActions } from 'vuex'
+import ejsExcel from '../../../common/ejsexcel/ejsExcel'
+// import ejsExcel from 'ejsExcel'
+var fs = require('fs')
+
 export default {
   name: 'measureData',
-  props: ['configData'],
+  props: ['configData', 'configIndex'],
   data () {
     return {
       temp: '',
-      isOver: false
+      isOver: false,
+      dialogVisible: false,
+      files: [],
+      templateIndex: 0
     }
   },
   computed: {
@@ -88,8 +113,17 @@ export default {
       },
       valueD: (state) => {
         return state.measure.valueD
+      },
+      basicInfo: (state) => {
+        return state.list.sampleList
+      },
+      tableData: (state) => {
+        return state.measure.tableData
       }
     })
+  },
+  created () {
+    this.files = fs.readdirSync('./模板')
   },
   methods: {
     ...mapActions(['changeTemp', 'remear', 'setTableData', 'nextBlock']),
@@ -119,18 +153,45 @@ export default {
       if (this.historyBlock < this.configData.data.length - 1) {
         
       }
+    },
+    onSubmit () {
+      this.dialogVisible = true
+    },
+    onConfirm () {
+      this.dialogVisible = false
+      let exlBuf = fs.readFileSync(`./模板/${this.files[this.templateIndex]}`)
+      const data = {
+        clientName: this.basicInfo[this.configIndex].clientName,
+        certCode: this.basicInfo[this.configIndex].certCode,
+        typeRule: this.basicInfo[this.configIndex].typeRule,
+        fantoryCode: this.basicInfo[this.configIndex].fantoryCode,
+        makeUnit: this.basicInfo[this.configIndex].makeUnit,
+        place: '本院',
+        tableData: this.tableData
+      }
+      ejsExcel.renderExcel(exlBuf, data)
+      .then((outBuf) => {
+        fs.writeFileSync(`./原始记录/${this.basicInfo[this.configIndex].certCode}.xlsx`, outBuf)
+        this.$message({
+          message: '原始记录生成成功，请在原始记录目录下查看',
+          type: 'success',
+          duration: 5000
+        })
+      })
     }
   }
 }
 </script>
 <style lang="scss">
 .measure-data {
-  .el-input__inner {
-    height: 43px;
-    border: 0 solid;
-    border-radius: 0 5px 5px 0;
-    text-align: center;
-    color: #409eff;
+  .main {
+    .el-input__inner {
+      height: 43px;
+      border: 0 solid;
+      border-radius: 0 5px 5px 0;
+      text-align: center;
+      color: #409eff;
+    }
   }
 }
 </style>

@@ -6,7 +6,7 @@ class SerialPort {
 
     self.cb = null;
     self.buffer = '';
-
+    self.ports = null
     _SerialPort.list(function (err, ports) {
       self.ports = ports;
       ports.forEach(function(port) {
@@ -15,6 +15,10 @@ class SerialPort {
         console.log(port.manufacturer);
       });
     });
+  }
+
+  getPort () {
+    return this.ports
   }
 
   open (com) {

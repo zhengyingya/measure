@@ -1,3 +1,24 @@
+const xlsx = require('node-xlsx')
+let gradeList = xlsx.parse("./结论依据/等依据.xlsx")
+let levelList = xlsx.parse("./结论依据/级依据.xlsx")
+
+let gradeInterval = gradeList[0].data.map((item) => {
+  return item[0]
+})
+gradeInterval = gradeInterval.slice(2, gradeInterval.length+1)
+gradeInterval = gradeInterval.map((item) => {
+  return Number(item.split(',')[1].replace(']', ''))
+})
+
+let levelInterval = levelList[0].data.map((item) => {
+  return item[0]
+})
+levelInterval = levelInterval.slice(2, levelInterval.length+1)
+levelInterval = levelInterval.map((item) => {
+  return Number(item.split(',')[1].replace(']', ''))
+})
+
+console.log(gradeList)
 
 const state = {
   temp: '',                 // 温度
@@ -124,10 +145,43 @@ const mutations = {
     const currentMearBlock = state.currentMearBlock
     const detaLength = Math.max(state.valueCenter, state.valueA, state.valueB, state.valueC, state.valueD) 
       - Math.min(state.valueCenter, state.valueA, state.valueB, state.valueC, state.valueD)
-    const offsetLength = state.valueCenter + Number(state.tableData[currentMearBlock].fix)
-    const grade = '5等'
+    const offsetLength = 0.52//state.valueCenter + Number(state.tableData[currentMearBlock].fix)
+    const size = state.tableData[currentMearBlock].size
+
+    let grade = ''
+    let level = ''
+    for (let i=0, len=gradeInterval.length; i<len; i++) {
+      if (Number(size) > gradeInterval[i]) {
+
+      }
+      else {
+        let _v = gradeList[0].data[i+2]
+        if (Math.abs(offsetLength) < Number(_v[9]) && detaLength < Number(_v[10])) {
+          grade = '5等'
+        }
+        break
+      }
+    }
+
+    for (let i=0, len=levelInterval.length; i<len; i++) {
+      if (Number(size) > levelInterval[i]) {
+ 
+      }
+      else {
+        let _v = levelList[0].data[i+2]
+        for (let j=1; j<_v.length; j+=2) {
+          console.log('-------', levelList[0].data[0], _v[j+1], _v[j], j)
+          if (Math.abs(offsetLength) < Number(_v[j+1]) && detaLength < Number(_v[j])) {
+            level = levelList[0].data[0][j]
+            break
+          }
+          
+        }
+        break 
+      }
+    }
     state.tableData[currentMearBlock] = {
-      size: state.tableData[currentMearBlock].size,
+      size: size,
       fix: state.tableData[currentMearBlock].fix,
       upface: 'vh',
       downface: 'vh',
@@ -139,7 +193,8 @@ const mutations = {
       temp: state.temp,
       detaLength,
       offsetLength,
-      grade
+      grade,
+      level
     }
     state.tableData = state.tableData.concat([])
   }

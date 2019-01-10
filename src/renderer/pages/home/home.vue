@@ -25,7 +25,7 @@
       </el-col>
     </el-row>
     <el-row>
-      <MeasureData :configData="configData[configIndex]"/>
+      <MeasureData :configData="configData[configIndex]" :configIndex="configIndex"/>
     </el-row>
     <el-row>
       <Record :configData="configData[configIndex]"/>
