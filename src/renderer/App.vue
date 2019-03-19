@@ -24,7 +24,7 @@
       }
     },
     created () {
-      // setInterval(this.intervalValue, 500)
+      setInterval(this.intervalValue, 500)
     }
   }
 </script>

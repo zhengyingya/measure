@@ -23,6 +23,7 @@ console.log(gradeList)
 const state = {
   temp: '',                 // 温度
   isRemear: false,          // 是否在进行重测，重测指点击表格中第一列按钮进行的重测
+  detaValue: 0,             // 执行清零后的差值，后续读取的值都要与此差值相加后用于显示
   currentStep: 0,           // 当前测量处在哪个步骤
   historyBlock: 0,          // 记录历史测量了第几块，用在重测了一块后，继续还原之前的测量流程
   currentMearBlock: 0,      // 当前测量量块组中的第几块，以数组下标方式计算，所以从0开始
@@ -33,7 +34,22 @@ const state = {
   valueB: '',
   valueC: '',
   valueD: '',
-  tableData: []
+  tableData: [],
+  tableDataCopy: []
+}
+
+// 清空state中所有的数据，还原至初始状态
+function clearAll (state) {
+  init(state)
+  state.temp = ''
+  state.isRemear = false
+  state.detaValue = 0
+  state.currentStep = 0
+  state.historyBlock = 0
+  state.currentMearBlock = 0
+  state.currentValue = 100
+  state.standard = ''
+  state.tableData= []
 }
 
 function init (state) {
@@ -54,19 +70,27 @@ const actions = {
   intervalValue ({ commit }) {
     window.serialPort.send('13\r\n', (res) => {
       console.log('-----', res)
-      // let num = res.split(' ')[1].replace('K', '') + res.split(' ')[2].replace('K', '')
-      // num = (Number(num.slice(0, 12) + '.' + num.slice(-4)) * 2).toFixed(4)
-      // commit('MEASURE_INTERVAL_VALUE', { value: num })
+      let symbol = res.slice(11, 12)
+      res = res.slice(12, res.length)
+      // let num = res.split(' ')[0].replace('K', '') + res.split(' ')[1].replace('K', '')
+      let num = res.replace('K', '')
+      // console.log('-----', num, symbol)
+      num = (Number(symbol + num.slice(0, 4) + '.' + num.slice(-4)) * 2).toFixed(4) * 1000
+      commit('MEASURE_INTERVAL_VALUE', { value: num })
     })
   },
   getValue ({ commit }) {
     // window.serialPort.send('13\r\n', (res) => {
     //   console.log('-----', res)
-    //   let num = res.split(' ')[1].replace('K', '') + res.split(' ')[2].replace('K', '')
+    //   res = res.slice(0, res.length)
+    //   let num = res.split(' ')[0].replace('K', '') + res.split(' ')[1].replace('K', '')
     //   num = (Number(num.slice(0, 12) + '.' + num.slice(-4)) * 2).toFixed(4)
     //   commit('MEASURE_NEXT_GET_VALUE', { value: num })
     // })
     commit('MEASURE_NEXT_GET_VALUE', { value: 100 })
+  },
+  zero ({ commit }) {
+    commit('MEASURE_NEXT_ZERO')
   },
   setRemearFlag ({ commit }) {
     commit('MEARSURE_SET_REMEAR_FLAG')
@@ -82,6 +106,15 @@ const actions = {
   },
   setTableData ({ commit }) {
     commit('MEASURE_SET_TABLE_DATA')
+  },
+  clearAll ({ commit }) {
+    commit('MEASURE_CLEAR_ALL')
+  },
+  setTableDataScrap ({ commit }, { key, index, value }) {
+    commit('MEASURE_SET_TABLE_DATA_SCRAP', { key, index, value })
+  },
+  setTableDataRestore({ commit }, { index }) {
+    commit('MEASURE_SET_TABLE_DATA_RESTORE', { index })
   }
 }
 
@@ -95,8 +128,12 @@ const mutations = {
   MEASURE_NEXT_STEP (state) {
     state.currentStep ++
   },
+  MEASURE_NEXT_ZERO (state) {
+    state.detaValue = Number(state.detaValue) - Number(state.currentValue)
+  },
   MEASURE_INTERVAL_VALUE (state, { value }) {
-    state.currentValue = value
+    // console.log(value, state.detaValue)
+    state.currentValue = (Number(value) + Number(state.detaValue)).toFixed(1)
   },
   MEASURE_NEXT_GET_VALUE (state, { value }) {
     switch(state.currentStep) {
@@ -143,9 +180,9 @@ const mutations = {
   },
   MEASURE_SET_TABLE_DATA(state) {
     const currentMearBlock = state.currentMearBlock
-    const detaLength = Math.max(state.valueCenter, state.valueA, state.valueB, state.valueC, state.valueD) 
-      - Math.min(state.valueCenter, state.valueA, state.valueB, state.valueC, state.valueD)
-    const offsetLength = 0.52//state.valueCenter + Number(state.tableData[currentMearBlock].fix)
+    const detaLength = (Math.max(state.valueCenter, state.valueA, state.valueB, state.valueC, state.valueD) 
+      - Math.min(state.valueCenter, state.valueA, state.valueB, state.valueC, state.valueD)).toFixed(1)
+    const offsetLength = Number(state.valueCenter) + Number(state.tableData[currentMearBlock].fix)
     const size = state.tableData[currentMearBlock].size
 
     let grade = ''
@@ -156,8 +193,10 @@ const mutations = {
       }
       else {
         let _v = gradeList[0].data[i+2]
-        if (Math.abs(offsetLength) < Number(_v[9]) && detaLength < Number(_v[10])) {
+        if (detaLength < Number(_v[10])) {
           grade = '5等'
+        } else {
+          grade = '不合格'
         }
         break
       }
@@ -196,7 +235,40 @@ const mutations = {
       grade,
       level
     }
-    state.tableData = state.tableData.concat([])
+    state.tableDataCopy[currentMearBlock] = state.tableData[currentMearBlock]
+    state.tableData = [].concat(JSON.parse(JSON.stringify(state.tableData)))
+    state.tableDataCopy = [].concat(JSON.parse(JSON.stringify(state.tableDataCopy)))
+  },
+  MEASURE_CLEAR_ALL(state) {
+    clearAll(state)
+  },
+  MEASURE_SET_TABLE_DATA_SCRAP(state, { index, key, value }) {
+    const _face = {
+      [key]: value
+    }
+    state.tableData[index] = {
+      size: state.tableData[index].size,
+      fix: '/',
+      upface: state.tableData[index].upface,
+      downface: state.tableData[index].downface,
+      valueCenter: '/',
+      valueA: '/',
+      valueB: '/',
+      valueC: '/',
+      valueD: '/',
+      temp: '/',
+      detaLength: '/',
+      offsetLength: '/',
+      grade: '报废',
+      level: '/',
+      ..._face
+    }
+    state.tableData = [].concat(JSON.parse(JSON.stringify(state.tableData)))
+    // console.log('-------------', state.tableData[index], state.tableDataCopy[index])
+  },
+  MEASURE_SET_TABLE_DATA_RESTORE(state, { index }) {
+    state.tableData[index] = state.tableDataCopy[index]
+    state.tableData = [].concat(JSON.parse(JSON.stringify(state.tableData)))
   }
 }
 

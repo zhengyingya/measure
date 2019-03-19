@@ -1,13 +1,13 @@
 <template>
   <div class="measure-data">
-    <el-row type="flex" class="main">
+    <el-row type="flex" justify="space-between" class="main">
       <el-col class="c1">
         <el-row type="flex" style="margin-bottom: 10px;">
           <div class="label">当前量块</div>
           <div class="val fz-24" style="color:red;font-weight:900">{{currentMearBlock+1}}</div>
         </el-row>
         <el-row type="flex" style="margin-bottom: 10px;">
-          <div class="label">标称值</div>
+          <div class="label">名义尺寸</div>
           <div class="val">{{configData.data[currentMearBlock].size}}</div>
         </el-row>
         <el-row type="flex">
@@ -19,21 +19,21 @@
         <div class="block">
             <el-row type="flex">
               <el-col :span="12">
-                <div>{{valueA}}</div>
+                <div>{{valueB}}{{valueB===''?'':'μm'}}</div>
               </el-col>
               <el-col :span="12">
-                <div class="text-r">{{valueB}}</div>
+                <div class="text-r">{{valueC}}{{valueC===''?'':'μm'}}</div>
               </el-col>
             </el-row>
             <el-row type="flex">
-                <div style="width:100%;text-align:center">{{valueCenter}}</div>
+                <div style="width:100%;text-align:center">{{valueCenter}}{{valueCenter===''?'':'μm'}}</div>
             </el-row>
             <el-row type="flex">
               <el-col :span="12">
-                <div>{{valueC}}</div>
+                <div>{{valueA}}{{valueA===''?'':'μm'}}</div>
               </el-col>
               <el-col :span="12">
-                <div class="text-r">{{valueD}}</div>
+                <div class="text-r">{{valueD}}{{valueD===''?'':'μm'}}</div>
               </el-col>
             </el-row>
         </div>
@@ -43,7 +43,7 @@
         <el-button type="warning" icon="el-icon-arrow-right" :disabled="currentStep===7" circle></el-button> -->
         <el-row><el-button :disabled="currentStep<=6" type="danger" style="margin-top:0px;" @click="onRemear">重测</el-button></el-row>
         <el-row><el-button :disabled="currentStep<=6" type="primary" style="margin-top:10px;" @click="onNext">下一块</el-button></el-row>
-        <el-row v-if="1||isOver"><el-button type="success" style="margin-top:10px;" @click="onSubmit">提交</el-button></el-row>
+        <el-row v-if="isOver"><el-button type="success" style="margin-top:10px;" @click="onSubmit">提交</el-button></el-row>
       </el-col>
     </el-row>
 
@@ -103,6 +103,7 @@ export default {
         return state.measure.valueCenter
       },
       valueA: (state) => {
+        console.log('======', state.measure.valueA)
         return state.measure.valueA
       },
       valueB: (state) => {
@@ -197,6 +198,7 @@ export default {
 </style>
 <style lang="scss" scoped>
 .measure-data {
+  width: 100%;
   .c1 {
     width: 350px;
     padding: 0;

@@ -2,7 +2,7 @@
   <div class="com-header">
     <el-row type="flex">
       <div class="c-logo">量块测量系统</div>
-      <div style="display:flex;flex:1;background:rgb(84, 92, 100)">
+      <div style="display:flex;flex:1;background:#001528">
         <div :class="['menu-item', navActive==='/'?'active':'']" @click="handleSelect('')">样品</div>
         <div :class="['menu-item', navActive==='/home'?'active':'']" @click="handleSelect('home')">测量</div>
         <div :class="['menu-item', navActive==='/config'?'active':'']" @click="handleSelect('config')">模板</div>
@@ -42,15 +42,17 @@ export default {
     }) 
   },
   methods: {
-    ...mapActions(['changeRouter']),
+    ...mapActions(['changeRouter', 'clearAll']),
     handleSelect (index) {
       if (this.navActive === '/home') {
-        if (index !== '/home') {
-          this.$confirm('离开后所有测量数据都将情况，确认离开?', '警告', {
+        console.log(index)
+        if (index !== 'home') {
+          this.$confirm('离开后所有测量数据都将清空，确认离开?', '警告', {
             confirmButtonText: '确定',
             cancelButtonText: '取消',
             type: 'warning'
           }).then(() => {
+            this.clearAll()
             this.changeRouter({ name: index })
             this.$router.push({ path: '/' + index })
           })
@@ -59,7 +61,7 @@ export default {
         this.$message({
           message: '请在样品页选择一个样品进行测量',
           type: 'warning',
-          duration: 1000
+          duration: 2000
         })
       } else {
         this.changeRouter({ name: index })
@@ -77,18 +79,21 @@ export default {
       line-height: 60px;
       height: 60px;
       text-align: center;
-      background: rgb(84, 92, 100);
+      background: #001528;
       color: #fff;
       font-size: 18px;
       cursor: pointer;
+      &:hover {
+        background:#334453;
+      }
     }
     .active {
-      background: 	#66B3FF
+      background: #1890FF;
     }
     .c-logo{
       padding: 0 40px;
       width: 160px;
-      background: #545c64;
+      background: #001528;
       color: #fff;
       line-height: 60px;
       height: 60px;

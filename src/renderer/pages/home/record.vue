@@ -4,6 +4,7 @@
       :data="tableData"
       border
       stripe
+      height="100%"
       style="width:100%">
       <el-table-column
         width="60">
@@ -17,24 +18,44 @@
       </el-table-column>
       <el-table-column
         prop="size"
-        label="量块名义尺寸（mm）"
-        width="80">
+        label="量块名义尺寸（mm）">
       </el-table-column>
       <el-table-column label="研合性/外观">
         <el-table-column
           prop="upface"
           label="上工作面"
-          width="60">
+          width="80">
+          <template slot-scope="scope">
+            <el-select v-if="scope.row.upface" v-model="scope.row.upface" style="width:100%" @change="faceSelectChange(scope.row.upface, 'upface', scope.$index)">    
+              <el-option
+                v-for="item in faceSelectOptions"
+                :key="item"
+                :label="item"
+                :value="item">
+              </el-option>
+            </el-select>
+          </template>
         </el-table-column>
         <el-table-column
           prop="downface"
           label="下工作面"
-          width="60">
+          width="80">
+          <template slot-scope="scope">
+            <el-select v-if="scope.row.downface" v-model="scope.row.downface" style="width:100%" @change="faceSelectChange(scope.row.downface, 'downface', scope.$index)">    
+              <el-option
+                v-for="item in faceSelectOptions"
+                :key="item"
+                :label="item"
+                :value="item">
+              </el-option>
+            </el-select>
+          </template>
         </el-table-column>
       </el-table-column>
       <el-table-column
           prop="temp"
-          label="温度（℃）">
+          label="温度（℃）"
+          width="90">
       </el-table-column>
       <el-table-column
           prop="fix"
@@ -44,34 +65,37 @@
       <el-table-column label="测量读数（μm）">
         <el-table-column
             prop="valueCenter"
-            label="中心">
+            label="中心"
+            width="80">
         </el-table-column>
         <el-table-column
             prop="valueA"
-            label="a">
+            label="a"
+            width="80">
         </el-table-column>
         <el-table-column
             prop="valueB"
-            label="b">
+            label="b"
+            width="80">
         </el-table-column>
         <el-table-column
             prop="valueC"
-            label="c">
+            label="c"
+            width="80">
         </el-table-column>
         <el-table-column
             prop="valueD"
-            label="d">
+            label="d"
+            width="80">
         </el-table-column>
       </el-table-column>
       <el-table-column
         prop="detaLength"
-        label="长度变动量（μm）"
-        width="70">
+        label="长度变动量（μm）">
       </el-table-column>
       <el-table-column
         prop="offsetLength"
-        label="中心长度偏差（μm）"
-        width="70">
+        label="中心长度偏差（μm）">
       </el-table-column>
       <el-table-column
         prop="level"
@@ -99,6 +123,9 @@ export default {
   props: ['configData'],
   data () {
     return {
+      faceSelectOptions: ['vh', 'h', 'p', 'x', 'nh'],
+      upfaceSelect: 'vh',
+      downfaceSelect: 'vh'
     }
   },
   computed: {
@@ -112,10 +139,24 @@ export default {
     })
   },
   methods: {
-    ...mapActions(['initTableData', 'remear', 'setRemearFlag']),
+    ...mapActions(['initTableData', 'remear', 'setRemearFlag', 'setTableDataScrap', 'setTableDataRestore']),
     handleRemear (index) {
       this.setRemearFlag()
       this.remear({ blockIndex: index })
+    },
+    faceSelectChange (value, key, index) {
+      console.log(value, key, index)
+      if (value !== 'vh') {
+        this.setTableDataScrap({
+          key,
+          value,
+          index
+        })
+      } else {
+        this.setTableDataRestore({
+          index
+        })
+      }
     }
   },
   created () {
@@ -123,16 +164,35 @@ export default {
   }
 }
 </script>
+
 <style lang="scss">
 .record {
   .el-button--mini {
     padding: 5px 7px;
+  }
+  .el-input {
+    .el-input__inner {
+      height: 30px;
+      line-height: 30px;
+      font-size: 12px;
+      padding: 0 10px;
+      /* text-align: center; */
+    }
+    .el-input__suffix {
+      right: -2px;
+    }
+    i {
+      line-height: 30px;
+      margin-left: 15px;
+    }
   }
 }
 </style>
 
 <style lang="scss" scoped>
 .record {
-  padding-top: 20px;
+  width: 100%;
+  padding: 20px 0;
+  box-sizing: border-box;
 }
 </style>

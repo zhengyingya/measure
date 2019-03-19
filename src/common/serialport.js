@@ -29,7 +29,7 @@ class SerialPort {
 
     if (self.serialPort) {
       this.serialPort.on('data', function (data) {
-        console.log(']]]]', data)
+        // console.log(']]]]', data)
         for (let i=0,len=data.length; i<len; i++) {
           if (data[i] === 10) {                          // 回车符表示串口接受完一段数据
             if (self.cb) {
@@ -65,7 +65,7 @@ class SerialPort {
     this.cb = cb;
     this.serialPort.write(data, function( err ) {
       if (err) {
-        console.log('errre')
+        console.log('errow')
         cb(err);
       }
     });

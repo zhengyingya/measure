@@ -2,7 +2,7 @@ var oracledb = require('oracledb')
 var config = {
   user: 'emcselect',
   password: 'emcselect',
-  connectString: "10.4.130.2:1521/emc"
+  connectString: "10.4.130.2:1521/orcl"
 }
 
 export default {

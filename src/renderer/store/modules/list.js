@@ -27,7 +27,7 @@ const actions = {
       ENTRUST_DATE,\
       SAMPLE_NAME from EMC.TASK_SAMPLES INNER JOIN EMC.TASK_ORDER\
       ON TASK_SAMPLES.TASK_SAMPLE_ORDER = TASK_ORDER.ID\
-      where SAMPLE_NAME = '量块' and NODE_STATUS='RECORD'")
+      where SAMPLE_NAME = '量块' and NODE_STATUS='TESTSAMPLE'")
       .then((result) => {
         console.log(result)
         commit('LIST_GET_SAMPLE_LIST', { sampleHead: result.metaData, sampleList: result.rows })

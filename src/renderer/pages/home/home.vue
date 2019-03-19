@@ -1,6 +1,6 @@
 <template>
   <div class="home">
-    <el-row type="flex">
+    <el-row type="flex" style="height:270px;">
       <el-col class="c1">
         <div class="block">
           标准量块
@@ -8,26 +8,26 @@
         </div>
         <div class="block">
           被测量块
-          <Dot v-show="currentStep===3" style="position:absolute;top:12px;"/>
-          <Dot v-show="currentStep===5" style="position:absolute;bottom:-2px;"/>
+          <Dot v-show="currentStep===4" style="position:absolute;top:12px;"/>
+          <Dot v-show="currentStep===3" style="position:absolute;bottom:-2px;"/>
           <Dot v-show="currentStep===2" style="margin:20px auto"/>
-          <Dot v-show="currentStep===4" style="position:absolute;right:0;top:12px;"/>
+          <Dot v-show="currentStep===5" style="position:absolute;right:0;top:12px;"/>
           <Dot v-show="currentStep===6" style="position:absolute;right:0;bottom:-2px"/>
         </div>
       </el-col>
       <el-col class="c2">
-        <div class="text">{{currentValue}}<span class="fz-38">mm</span></div>
+        <div class="text">{{(currentValue/1000).toFixed(4)}}<span class="fz-38">mm</span></div>
       </el-col>
       <el-col class="c3">
           <el-button :disabled="currentStep!=0?true:false" type="success" class="btn" style="margin: 20px 10px;" @click="start">开始</el-button>
-          <el-button :disabled="currentStep>6?true:false" type="primary" plain class="btn" style="margin-bottom: 20px;" @click="take">采样</el-button>
-          <el-button :disabled="currentStep>6?true:false" type="warning" plain class="btn" @click="zero">清零</el-button>
+          <el-button :disabled="currentStep>6||currentStep===0?true:false" type="primary" plain class="btn" style="margin-bottom: 20px;" @click="take">采样</el-button>
+          <el-button :disabled="currentStep>6||currentStep===0?true:false" type="warning" plain class="btn" @click="onZero">清零</el-button>
       </el-col>
     </el-row>
-    <el-row>
+    <el-row type="flex" style="height: 155px;">
       <MeasureData :configData="configData[configIndex]" :configIndex="configIndex"/>
     </el-row>
-    <el-row>
+    <el-row type="flex" style="flex:1">
       <Record :configData="configData[configIndex]"/>
     </el-row>
   </div>
@@ -69,9 +69,13 @@ export default {
   },
   created () {
     // console.log('-----', this.$route)
+    document.addEventListener('keyup', this.onKeyUp, false)
+  },
+  beforeDestroy () {
+    document.removeEventListener('keyup', this.onKeyUp, false)
   },
   methods: {
-    ...mapActions(['nextStep', 'getValue', 'mearStart']),
+    ...mapActions(['nextStep', 'getValue', 'mearStart', 'zero']),
     start () {
       if (!this.temp) {
         this.$alert('请先输入温度值', '提示', {
@@ -87,9 +91,18 @@ export default {
       this.getValue()
       this.nextStep()
     },
-    zero () {
-      this.getValue()
-      this.nextStep()
+    onZero () {
+      this.zero()
+      // this.getValue()
+      // this.nextStep()
+    },
+    onKeyUp (val) {
+      console.log(val)
+      if (this.currentStep >= 1 && this.currentStep <= 6) {
+        if (val.key === '6' || val.key === '7') {
+          this.take()
+        }
+      }
     }
   }
 }
@@ -97,6 +110,8 @@ export default {
 
 <style lang="scss" scoped>
 .home {
+  display: flex;
+  flex-direction: column;
   width: 100%;
   padding: 0 40px;
   box-sizing: border-box;
@@ -120,7 +135,7 @@ export default {
     flex: 1;
     .text {
       font-size: 90px;
-      line-height: 280px;
+      line-height: 270px;
       text-align: center;
     }
   }
