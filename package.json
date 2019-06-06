@@ -25,6 +25,7 @@
     "directories": {
       "output": "build"
     },
+    "npmRebuild": false,
     "files": [
       "dist/electron/**/*"
     ],

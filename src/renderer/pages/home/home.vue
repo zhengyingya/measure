@@ -16,15 +16,37 @@
         </div>
       </el-col>
       <el-col class="c2">
-        <div class="text">{{(currentValue/1000).toFixed(4)}}<span class="fz-38">mm</span></div>
+        <div class="text">
+          {{(currentValue/1000).toFixed(4)}}
+          <span class="fz-38">mm</span>
+        </div>
       </el-col>
       <el-col class="c3">
-          <el-button :disabled="currentStep!=0?true:false" type="success" class="btn" style="margin: 20px 10px;" @click="start">开始</el-button>
-          <el-button :disabled="currentStep>6||currentStep===0?true:false" type="primary" plain class="btn" style="margin-bottom: 20px;" @click="take">采样</el-button>
-          <el-button :disabled="currentStep>6||currentStep===0?true:false" type="warning" plain class="btn" @click="onZero">清零</el-button>
+        <el-button
+          :disabled="currentStep!=0?true:false"
+          type="success"
+          class="btn"
+          style="margin: 20px 10px;"
+          @click="start"
+        >开始</el-button>
+        <el-button
+          :disabled="currentStep>6||currentStep===0?true:false"
+          type="primary"
+          plain
+          class="btn"
+          style="margin-bottom: 20px;"
+          @click="take"
+        >采样</el-button>
+        <el-button
+          :disabled="currentStep>6||currentStep===0?true:false"
+          type="warning"
+          plain
+          class="btn"
+          @click="onZero"
+        >清零</el-button>
       </el-col>
     </el-row>
-    <el-row type="flex" style="height: 155px;">
+    <el-row type="flex" style="height: 175px;">
       <MeasureData :configData="configData[configIndex]" :configIndex="configIndex"/>
     </el-row>
     <el-row type="flex" style="flex:1">
@@ -34,78 +56,77 @@
 </template>
 
 <script>
-import MeasureData from './measureData'
-import Record from './record'
-import Dot from '@/components/dot.vue'
-import { mapState, mapActions } from 'vuex'
+import MeasureData from "./measureData";
+import Record from "./record";
+import Dot from "@/components/dot.vue";
+import { mapState, mapActions } from "vuex";
 
 export default {
-  name: 'home',
+  name: "home",
   components: {
     MeasureData,
     Record,
     Dot
   },
-  data () {
+  data() {
     return {
       configIndex: this.$route.params.configIndex
-    }
+    };
   },
   computed: {
     ...mapState({
-      temp: (state) => {
-        return state.measure.temp
+      temp: state => {
+        return state.measure.temp;
       },
-      currentStep: (state) => {
-        return state.measure.currentStep
+      currentStep: state => {
+        return state.measure.currentStep;
       },
-      configData: (state) => {
-        return state.mearConfig.configData
+      configData: state => {
+        return state.mearConfig.configData;
       },
-      currentValue: (state) => {
-        return state.measure.currentValue
+      currentValue: state => {
+        return state.measure.currentValue;
       }
     })
   },
-  created () {
+  created() {
     // console.log('-----', this.$route)
-    document.addEventListener('keyup', this.onKeyUp, false)
+    document.addEventListener("keyup", this.onKeyUp, false);
   },
-  beforeDestroy () {
-    document.removeEventListener('keyup', this.onKeyUp, false)
+  beforeDestroy() {
+    document.removeEventListener("keyup", this.onKeyUp, false);
   },
   methods: {
-    ...mapActions(['nextStep', 'getValue', 'mearStart', 'zero']),
-    start () {
+    ...mapActions(["nextStep", "getValue", "mearStart", "zero"]),
+    start() {
       if (!this.temp) {
-        this.$alert('请先输入温度值', '提示', {
-          confirmButtonText: '确定',
-          type: 'error'
-        })
-      }
-      else {
-        this.nextStep()
+        this.$alert("请先输入温度值", "提示", {
+          confirmButtonText: "确定",
+          type: "error"
+        });
+      } else {
+        this.nextStep();
       }
     },
-    take () {
-      this.getValue()
-      this.nextStep()
+    take() {
+      this.getValue();
+      this.nextStep();
     },
-    onZero () {
-      this.zero()
+    onZero() {
+      this.zero();
       // this.getValue()
       // this.nextStep()
     },
-    onKeyUp (val) {
-      console.log(val)
+    onKeyUp(val) {
+      console.log(val);
       if (this.currentStep >= 1 && this.currentStep <= 6) {
-        if (val.key === '6' || val.key === '7') {
-          this.take()
+        if (val.key === "6" || val.key === "7") {
+          this.take();
         }
       }
     }
   }
-}
+};
 </script>
 
 <style lang="scss" scoped>
@@ -123,11 +144,11 @@ export default {
       padding: 5px;
       text-align: center;
       border-radius: 0;
-      background: #CCCCCC;
+      background: #cccccc;
       height: 100px;
-      margin-bottom: 20px; 
+      margin-bottom: 20px;
       border: 1px solid #ebeef5;
-      box-shadow: 0 2px 12px 0 rgba(0,0,0,.1);
+      box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
       box-sizing: border-box;
     }
   }
