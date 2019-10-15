@@ -51,6 +51,20 @@ const mutations = {
       }
       return _map;
     });
+    if (sampleList.length === 0) {
+      state.sampleList = [
+        {
+          certCode: "0001",
+          typeRule: "",
+          fantoryCode: "",
+          makeUnit: "",
+          nodeStatus: "",
+          clientName: "温州计量院（测试）",
+          entrustDate: new Date(),
+          sampleName: "测试"
+        }
+      ];
+    }
     console.log(state.sampleList);
   }
 };

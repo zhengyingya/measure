@@ -1,24 +1,34 @@
 const xlsx = require("node-xlsx");
-let gradeList = xlsx.parse("./结论依据/等依据.xlsx");
-let levelList = xlsx.parse("./结论依据/级依据.xlsx");
+import comNedb from "../../../database/comNedb";
 
-let gradeInterval = gradeList[0].data.map(item => {
-  return item[0];
-});
-gradeInterval = gradeInterval.slice(2, gradeInterval.length + 1);
-gradeInterval = gradeInterval.map(item => {
-  return Number(item.split(",")[1].replace("]", ""));
-});
+let gradeList;
+let levelList;
+let gradeInterval;
+let levelInterval;
+comNedb.find({ type: "filePath" }).then(res => {
+  if (res.length !== 0) {
+    gradeList = xlsx.parse(res[0].pathName + "/结论依据/等依据.xlsx");
+    levelList = xlsx.parse(res[0].pathName + "/结论依据/级依据.xlsx");
 
-let levelInterval = levelList[0].data.map(item => {
-  return item[0];
-});
-levelInterval = levelInterval.slice(2, levelInterval.length + 1);
-levelInterval = levelInterval.map(item => {
-  return Number(item.split(",")[1].replace("]", ""));
-});
+    gradeInterval = gradeList[0].data.map(item => {
+      return item[0];
+    });
+    gradeInterval = gradeInterval.slice(2, gradeInterval.length + 1);
+    gradeInterval = gradeInterval.map(item => {
+      return Number(item.split(",")[1].replace("]", ""));
+    });
 
-console.log(gradeList);
+    levelInterval = levelList[0].data.map(item => {
+      return item[0];
+    });
+    levelInterval = levelInterval.slice(2, levelInterval.length + 1);
+    levelInterval = levelInterval.map(item => {
+      return Number(item.split(",")[1].replace("]", ""));
+    });
+
+    console.log(gradeList);
+  }
+});
 
 const state = {
   temp: "", // 温度
@@ -202,8 +212,9 @@ const mutations = {
         state.valueD
       )
     ).toFixed(1);
-    const offsetLength =
-      Number(state.valueCenter) + Number(state.tableData[currentMearBlock].fix);
+    const offsetLength = (
+      Number(state.valueCenter) + Number(state.tableData[currentMearBlock].fix)
+    ).toFixed(1);
     const size = state.tableData[currentMearBlock].size;
 
     let grade = "";
@@ -217,7 +228,7 @@ const mutations = {
         if (Number(size) > gradeInterval[i]) {
         } else {
           let _v = gradeList[0].data[i + 2];
-          if (detaLength < Number(_v[10])) {
+          if (detaLength <= Number(_v[10])) {
             grade = "5等";
           } else {
             grade = "不合格";
@@ -233,8 +244,8 @@ const mutations = {
           for (let j = 1; j < _v.length; j += 2) {
             console.log("-------", levelList[0].data[0], _v[j + 1], _v[j], j);
             if (
-              Math.abs(offsetLength) < Number(_v[j]) &&
-              detaLength < Number(_v[j + 1])
+              Math.abs(offsetLength) <= Number(_v[j]) &&
+              detaLength <= Number(_v[j + 1])
             ) {
               level = levelList[0].data[0][j];
               break;
@@ -269,7 +280,7 @@ const mutations = {
   MEASURE_SET_NO_MEAR_TABLE_DATA(state) {
     const currentMearBlock = state.currentMearBlock;
     state.tableData[currentMearBlock] = {
-      size: "/",
+      size: state.tableData[currentMearBlock].size,
       fix: "/",
       upface: "/",
       downface: "/",

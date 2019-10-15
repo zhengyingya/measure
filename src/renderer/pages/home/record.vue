@@ -41,27 +41,27 @@
       <el-table-column prop="temp" label="温度（℃）" width="90"></el-table-column>
       <el-table-column prop="fix" label="标准修正量（μm）" width="100"></el-table-column>
       <el-table-column label="测量读数（μm）">
-        <el-table-column prop="valueCenter" label="中心" width="80">
+        <el-table-column prop="valueCenter" label="中心" width="70">
           <template slot-scope="scope">
             <span>{{scope.row.valueCenter>0?`+${scope.row.valueCenter}`:scope.row.valueCenter}}</span>
           </template>
         </el-table-column>
-        <el-table-column prop="valueA" label="a" width="80">
+        <el-table-column prop="valueA" label="a" width="70">
           <template slot-scope="scope">
             <span>{{scope.row.valueA>0?`+${scope.row.valueA}`:scope.row.valueA}}</span>
           </template>
         </el-table-column>
-        <el-table-column prop="valueB" label="b" width="80">
+        <el-table-column prop="valueB" label="b" width="70">
           <template slot-scope="scope">
             <span>{{scope.row.valueB>0?`+${scope.row.valueB}`:scope.row.valueB}}</span>
           </template>
         </el-table-column>
-        <el-table-column prop="valueC" label="c" width="80">
+        <el-table-column prop="valueC" label="c" width="70">
           <template slot-scope="scope">
             <span>{{scope.row.valueC>0?`+${scope.row.valueC}`:scope.row.valueC}}</span>
           </template>
         </el-table-column>
-        <el-table-column prop="valueD" label="d" width="80">
+        <el-table-column prop="valueD" label="d" width="70">
           <template slot-scope="scope">
             <span>{{scope.row.valueD>0?`+${scope.row.valueD}`:scope.row.valueD}}</span>
           </template>
@@ -160,13 +160,28 @@ export default {
       margin-left: 15px;
     }
   }
+  .el-table--group,
+  th,
+  td {
+    border: 1px solid #999;
+    border-right: 1px solid #999;
+    border-bottom: 1px solid #999;
+  }
+  .cell {
+    text-align: center;
+  }
+  th {
+    .cell {
+      font-size: 12px;
+    }
+  }
 }
 </style>
 
 <style lang="scss" scoped>
 .record {
   width: 100%;
-  padding: 20px 0;
+  // padding: 20px 0;
   box-sizing: border-box;
 }
 </style>

@@ -87,7 +87,6 @@
 <script>
 import { mapState, mapActions } from "vuex";
 import ejsExcel from "../../../common/ejsexcel/ejsExcel";
-// import ejsExcel from 'ejsExcel'
 var fs = require("fs");
 
 export default {
@@ -120,7 +119,6 @@ export default {
         return state.measure.valueCenter;
       },
       valueA: state => {
-        console.log("======", state.measure.valueA);
         return state.measure.valueA;
       },
       valueB: state => {
@@ -141,7 +139,7 @@ export default {
     })
   },
   created() {
-    this.files = fs.readdirSync("./模板");
+    this.files = fs.readdirSync(`${window.pathName}\\模板`);
   },
   methods: {
     ...mapActions([
@@ -180,19 +178,38 @@ export default {
     },
     onConfirm() {
       this.dialogVisible = false;
-      let exlBuf = fs.readFileSync(`./模板/${this.files[this.templateIndex]}`);
+      let exlBuf = fs.readFileSync(
+        `${window.pathName}\\模板\\${this.files[this.templateIndex]}`
+      );
       const data = {
         clientName: this.basicInfo[this.configIndex].clientName,
         certCode: this.basicInfo[this.configIndex].certCode,
         typeRule: this.basicInfo[this.configIndex].typeRule,
         fantoryCode: this.basicInfo[this.configIndex].fantoryCode,
         makeUnit: this.basicInfo[this.configIndex].makeUnit,
+        sampleName: this.basicInfo[this.configIndex].sampleName,
         place: "本院",
-        tableData: this.tableData
+        tableData: this.tableData.map(item => {
+          return {
+            ...item,
+            valueCenter:
+              item.valueCenter > 0 ? `+${item.valueCenter}` : item.valueCenter,
+            valueA: item.valueA > 0 ? `+${item.valueA}` : item.valueA,
+            valueB: item.valueB > 0 ? `+${item.valueB}` : item.valueB,
+            valueC: item.valueC > 0 ? `+${item.valueC}` : item.valueC,
+            valueD: item.valueD > 0 ? `+${item.valueD}` : item.valueD,
+            offsetLength:
+              item.offsetLength > 0
+                ? `+${item.offsetLength}`
+                : item.offsetLength
+          };
+        })
       };
       ejsExcel.renderExcel(exlBuf, data).then(outBuf => {
         fs.writeFileSync(
-          `./原始记录/${this.basicInfo[this.configIndex].certCode}.xlsx`,
+          `${window.pathName}\\原始记录\\${
+            this.basicInfo[this.configIndex].certCode
+          }.xlsx`,
           outBuf
         );
         this.$message({

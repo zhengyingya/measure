@@ -1,13 +1,13 @@
 var _SerialPort = require("serialport");
 
 class SerialPort {
-  constructor () {
+  constructor() {
     let self = this;
 
     self.cb = null;
-    self.buffer = '';
-    self.ports = null
-    _SerialPort.list(function (err, ports) {
+    self.buffer = "";
+    self.ports = null;
+    _SerialPort.list(function(err, ports) {
       self.ports = ports;
       ports.forEach(function(port) {
         console.log(port.comName);
@@ -17,55 +17,53 @@ class SerialPort {
     });
   }
 
-  getPort () {
-    return this.ports
+  getPort() {
+    return this.ports;
   }
 
-  open (com) {
+  open(com) {
     let self = this;
     self.serialPort = new _SerialPort(com, {
       baudRate: 9600
     });
 
     if (self.serialPort) {
-      this.serialPort.on('data', function (data) {
+      this.serialPort.on("data", function(data) {
         // console.log(']]]]', data)
-        for (let i=0,len=data.length; i<len; i++) {
-          if (data[i] === 10) {                          // 回车符表示串口接受完一段数据
+        for (let i = 0, len = data.length; i < len; i++) {
+          if (data[i] === 10) {
+            // 回车符表示串口接受完一段数据
             if (self.cb) {
               self.cb(self.buffer);
               self.cb = null;
             }
-            self.buffer = '';
-          }
-          else if (data[i] === 13){
+            self.buffer = "";
+          } else if (data[i] === 13) {
             if (self.cb) {
               self.cb(self.buffer);
               self.cb = null;
             }
-            self.buffer = '';
-          }
-          else {
+            self.buffer = "";
+          } else {
             self.buffer += String.fromCharCode(data[i]);
           }
         }
-      })
+      });
       return 1;
-    }
-    else {
+    } else {
       return -1;
     }
   }
 
-  close () {
-    this.serialPort.on('data', () => {})
+  close() {
+    this.serialPort.on("data", () => {});
   }
 
-  send (data, cb) {
+  send(data, cb) {
     this.cb = cb;
-    this.serialPort.write(data, function( err ) {
+    this.serialPort.write(data, function(err) {
       if (err) {
-        console.log('errow')
+        console.log("errow");
         cb(err);
       }
     });

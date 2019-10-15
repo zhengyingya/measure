@@ -1,6 +1,7 @@
 <template>
   <div class="home">
-    <el-row type="flex" style="height:270px;">
+    <Info :configIndex="configIndex"/>
+    <el-row type="flex" style="height:250px;">
       <el-col class="c1">
         <div class="block">
           标准量块
@@ -46,9 +47,11 @@
         >清零</el-button>
       </el-col>
     </el-row>
-    <el-row type="flex" style="height: 175px;">
+    <el-row v-show="isMeasureShow" type="flex" style="height: 195px;">
       <MeasureData :configData="configData[configIndex]" :configIndex="configIndex"/>
+      <i v-show="isMeasureShow" class="el-icon-arrow-up top-icon" @click="isMeasureShow=false"/>
     </el-row>
+    <i v-show="!isMeasureShow" class="el-icon-arrow-down top-icon" @click="isMeasureShow=true"/>
     <el-row type="flex" style="flex:1">
       <Record :configData="configData[configIndex]"/>
     </el-row>
@@ -58,6 +61,7 @@
 <script>
 import MeasureData from "./measureData";
 import Record from "./record";
+import Info from "@/components/Info.vue";
 import Dot from "@/components/dot.vue";
 import { mapState, mapActions } from "vuex";
 
@@ -66,11 +70,13 @@ export default {
   components: {
     MeasureData,
     Record,
-    Dot
+    Dot,
+    Info
   },
   data() {
     return {
-      configIndex: this.$route.params.configIndex
+      configIndex: this.$route.params.configIndex,
+      isMeasureShow: true
     };
   },
   computed: {
@@ -120,7 +126,9 @@ export default {
     onKeyUp(val) {
       console.log(val);
       if (this.currentStep >= 1 && this.currentStep <= 6) {
-        if (val.key === "6" || val.key === "7") {
+        if (val.key === "6") {
+          this.zero();
+        } else if (val.key === "7" || val.key === " ") {
           this.take();
         }
       }
@@ -136,9 +144,15 @@ export default {
   width: 100%;
   padding: 0 40px;
   box-sizing: border-box;
+  .top-icon {
+    font-size: 30px;
+    color: red;
+    font-weight: bolder;
+    text-align: right;
+  }
   .c1 {
     width: 350px;
-    padding: 20px 0;
+    padding: 10px 0;
     .block {
       position: relative;
       padding: 5px;
@@ -156,7 +170,8 @@ export default {
     flex: 1;
     .text {
       font-size: 90px;
-      line-height: 270px;
+      line-height: 250px;
+      height: 250px;
       text-align: center;
     }
   }
